@@ -4,7 +4,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { esES } from "@mui/material/locale";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import { CartProvider } from "modules/cart/cartContext";
+import { CartProvider } from "modules/cart/CartContext";
 import { ProductProvider } from "productContext";
 
 const theme = createTheme(
@@ -18,7 +18,7 @@ const theme = createTheme(
       },
     },
   },
-  esES
+  esES,
 );
 
 const root = createRoot(document.getElementById("root"));
@@ -31,7 +31,7 @@ root.render(
         <App />
       </ProductProvider>
     </CartProvider>
-  </ThemeProvider>
+  </ThemeProvider>,
 );
 
 serviceWorker.register();

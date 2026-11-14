@@ -6,14 +6,14 @@ const ProductContext = createContext(null);
 let initialProducts;
 
 getProducts().then((products) => {
-  initialProducts = products;
+  initialProducts = products.data.products;
 });
 
 export function ProductProvider(props) {
   const [products, prodDispatch] = useReducer(productReducer, initialProducts);
   useEffect(() => {
     getProducts().then((products) => {
-      initialProducts = products;
+      initialProducts = products.data.products;
     });
   });
 

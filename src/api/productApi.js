@@ -1,126 +1,108 @@
-import { handleResponse, handleError } from "./apiUtils";
+import { apiGet, apiPost, apiPatch, apiDelete } from "./apiClient";
 
-export function getProducts() {
-  console.log("Getting products from API");
-  return fetch(import.meta.env.VITE_API_URL + "get.php")
-    .then(handleResponse)
-    .catch(handleError);
+// Products
+
+export function getProducts(filters = {}) {
+  const params = new URLSearchParams(filters);
+  const query = params.toString();
+
+  return apiGet(`products${query ? `?${query}` : ""}`);
 }
 
-export function changeStock(id, dir = 1) {
-  return fetch(import.meta.env.VITE_API_URL + "changeStock.php", {
-    method: "post",
-    body: JSON.stringify({
-      id: id,
-      dir: dir,
-    }),
-  })
-    .then(handleResponse)
-    .catch(handleError);
+export function getPublishedProducts() {
+  return apiGet("products/published");
 }
 
-export function createOrder(cart, user, type) {
-  return fetch(import.meta.env.VITE_API_URL + "createorder.php", {
-    method: "post",
-    body: JSON.stringify({
-      cart: JSON.stringify(cart),
-      user: user,
-      type: type,
-    }),
-  })
-    .then(handleResponse)
-    .catch(handleError);
+export function getUnpublishedProducts() {
+  return apiGet("products/unpublished");
+}
+
+export function getProductsPage(page) {
+  return apiGet(`products/page/${page}`);
 }
 
 export function getProductById(id) {
-  return fetch(import.meta.env.VITE_API_URL + "getproduct.php?id=" + id)
-    .then((response) => {
-      if (!response.ok) throw new Error("Network response was not ok.");
-      return response.json().then((courses) => {
-        if (courses.length !== 1) throw new Error("Product not found: " + id);
-        return courses[0]; // should only find one product for a given slug, so return it.
-      });
-    })
-    .catch(handleError);
+  return apiGet(`products/${id}`);
 }
 
 export function saveProduct(product) {
-  return fetch(import.meta.env.VITE_API_URL + "saveproduct.php", {
-    method: "post",
-    body: JSON.stringify({ ...product }),
-  })
-    .then(handleResponse)
-    .catch(handleError);
-}
+  if (product.id) {
+    return apiPatch(`products/${product.id}`, product);
+  }
 
-export function getVariantsById(id) {
-  return fetch(import.meta.env.VITE_API_URL + "getvariants.php?id=" + id)
-    .then(handleResponse)
-    .catch(handleError);
-}
-
-export function saveVariant(variant) {
-  return fetch(import.meta.env.VITE_API_URL + "savevariant.php", {
-    method: "post",
-    body: JSON.stringify({ ...variant[0] }),
-  })
-    .then(handleResponse)
-    .catch(handleError);
-}
-
-export function deleteVariant(variantId) {
-  return fetch(import.meta.env.VITE_API_URL + "deletevariant.php", {
-    method: "post",
-    body: JSON.stringify({ id: variantId }),
-  })
-    .then(handleResponse)
-    .catch(handleError);
+  return apiPost("products", product);
 }
 
 export function deleteProduct(id) {
-  return fetch(import.meta.env.VITE_API_URL + "deleteproduct.php", {
-    method: "post",
-    body: JSON.stringify({ id: id }),
-  })
-    .then(handleResponse)
-    .catch(handleError);
+  return apiDelete(`products/${id}`);
 }
 
-export function togglePublished(id) {
-  return fetch(import.meta.env.VITE_API_URL + "changepublished.php", {
-    method: "post",
-    body: JSON.stringify({ id: id }),
-  })
-    .then(handleResponse)
-    .catch(handleError);
+// Variants
+
+export function getVariantsById(productId) {
+  return apiGet(`variants/${productId}`);
 }
 
-export function toggleFeatured(id) {
-  return fetch(import.meta.env.VITE_API_URL + "changefeatured.php", {
-    method: "post",
-    body: JSON.stringify({ id: id }),
-  })
-    .then(handleResponse)
-    .catch(handleError);
+export function saveVariant(variant) {
+  return apiPatch(`variants/${variant.variant_id}`, variant);
 }
 
-export function searchUPC(upc) {
-  return fetch(import.meta.env.VITE_API_URL + "searchupc.php", {
-    method: "post",
-    body: JSON.stringify({ upc: upc }),
-  })
-    .then(handleResponse)
-    .catch(handleError);
+export function deleteVariant(variantId) {
+  return apiDelete(`variants/${variantId}`);
+}
+
+// Stock
+
+export function changeStock(variantId, quantity = 1, dir = 1) {
+  const action = dir >= 0 ? "UP" : "DOWN";
+
+  return apiPatch(`variants/${variantId}/${action}`, { quantity });
 }
 
 export function resetStock() {
-  return fetch(import.meta.env.VITE_API_URL + "resetstock.php?confirm=2egcryr")
-    .then(handleResponse)
-    .catch(handleError);
+  return Promise.resolve(null);
 }
 
+// Categories
+
 export function getCategories() {
-  return fetch(import.meta.env.VITE_API_URL + "getcategories.php")
-    .then(handleResponse)
-    .catch(handleError);
+  return apiGet("categories");
+}
+
+export function getCategoryById(id) {
+  return apiGet(`categories/${id}`);
+}
+
+export function saveCategory(category) {
+  if (category.id) {
+    return apiPatch(`categories/${category.id}`, category);
+  }
+
+  return apiPost("categories", category);
+}
+
+export function deleteCategory(id) {
+  return apiDelete(`categories/${id}`);
+}
+
+// Product properties
+
+export function togglePublished(id, published) {
+  return apiPatch(`products/${id}`, { published });
+}
+
+export function toggleFeatured(id, featured) {
+  return apiPatch(`products/${id}`, { featured });
+}
+
+// UPC lookup
+
+export function searchUPC(upc) {
+  return getProducts({ upc });
+}
+
+// Orders
+
+export function createOrder() {
+  return Promise.resolve(null);
 }

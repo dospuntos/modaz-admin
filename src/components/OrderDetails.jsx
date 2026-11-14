@@ -42,7 +42,7 @@ function OrderDetails() {
         showPrice: true,
       },
     ],
-    "quoteConfig"
+    "quoteConfig",
   );
 
   let { orderid } = useParams();
@@ -61,7 +61,7 @@ function OrderDetails() {
 
     // get products
     getProducts().then((products) => {
-      setProducts(products);
+      setProducts(products.data.products);
     });
   }, [orderid]);
 
@@ -111,7 +111,7 @@ function OrderDetails() {
     ) {
       deleteOrderItem(id).then(() => {
         let _orderItems = orderItems.filter(
-          (item) => item.order_item_id !== id
+          (item) => item.order_item_id !== id,
         );
         setOrderItems(_orderItems);
       });

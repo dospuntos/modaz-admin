@@ -2,7 +2,7 @@ import "./productcardsm.css";
 import IconButton from "@mui/material/IconButton";
 import AddShoppingCartOutlined from "@mui/icons-material/AddShoppingCartOutlined";
 import { getAllImages } from "functions";
-import { useCart } from "modules/cart/cartContext";
+import { useCart } from "modules/cart/CartContext";
 
 function ProductCardSm({ product }) {
   const { dispatch } = useCart();

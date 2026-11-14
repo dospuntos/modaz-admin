@@ -15,7 +15,7 @@ import Modal from "@mui/material/Modal";
 import Paper from "@mui/material/Paper";
 import { getDefaultImage, getImageCount } from "functions";
 import BurstModeIcon from "@mui/icons-material/BurstMode";
-import { useCart } from "modules/cart/cartContext";
+import { useCart } from "modules/cart/CartContext";
 import { useTheme } from "@mui/material/styles";
 
 export default function ProductCardLg({

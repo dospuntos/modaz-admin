@@ -33,7 +33,7 @@ function Orders() {
       setUsers(users);
     });
     getProducts().then((products) => {
-      setProducts(products);
+      setProducts(products.data.products);
     });
   }, []);
 

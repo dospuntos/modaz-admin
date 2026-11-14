@@ -3,7 +3,7 @@ import ShowPrices from "modules/ShowPrices";
 import { RiShoppingCartLine } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import { getAllImages } from "functions";
-import { useCart } from "modules/cart/cartContext";
+import { useCart } from "modules/cart/CartContext";
 
 export default function ProductList({ product, prodDispatch }) {
   const { dispatch } = useCart();

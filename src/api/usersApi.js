@@ -1,6 +1,18 @@
 import { handleResponse, handleError } from "./apiUtils";
 
+const MOCK_USERS = [
+  { id: 1, name: "Ana Pérez", email: "ana@example.com" },
+  { id: 2, name: "Carlos Ruiz", email: "carlos@example.com" },
+  { id: 3, name: "María López", email: "maria@example.com" },
+];
+
+const USE_MOCK_DATA = true;
+
 export function getUsers() {
+  if (USE_MOCK_DATA) {
+    return Promise.resolve(MOCK_USERS);
+  }
+
   return fetch(import.meta.env.VITE_API_URL + "getusers.php")
     .then(handleResponse)
     .catch(handleError);

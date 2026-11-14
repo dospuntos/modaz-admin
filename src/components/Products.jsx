@@ -24,12 +24,12 @@ export default function Products() {
   const [products, prodDispatch] = useReducer(productReducer, initialState);
   const [productLayout, setProductLayout] = useStickyState(
     "grid-lg",
-    "product-layout"
+    "product-layout",
   );
   const [stockFilter, setStockFilter] = useStickyState("all", "stockFilter");
   const [publishedFilter, setPublishedFilter] = useStickyState(
     "all",
-    "publishedFilter"
+    "publishedFilter",
   );
   const [searchText, setSearchText] = useState("");
   const [sizeFilter, setSizeFilter] = useStickyState("all", "sizeFilter");
@@ -43,12 +43,15 @@ export default function Products() {
   useEffect(() => {
     // Get products
     getProducts().then((products) => {
-      prodDispatch({ type: "set", data: products });
+      prodDispatch({ type: "set", data: products.data.products });
       setLoading(false);
     });
 
     // Get categories
-    getCategories().then((categories) => setCategories(categories));
+    getCategories().then((categories) =>
+      setCategories(categories.data.categories),
+    );
+    console.log("Got categories", categories);
   }, [refreshProducts]);
 
   function forceProductRefresh() {
@@ -60,21 +63,24 @@ export default function Products() {
   /* Filter by category  */
   if (catFilter !== "all" && filteredProducts.length) {
     filteredProducts = filteredProducts.filter((eachItem) =>
-      eachItem.category !== null ? eachItem.category.includes(catFilter) : false
+      eachItem.category !== null
+        ? eachItem.category.includes(catFilter)
+        : false,
     );
   }
 
+  console.log("products:", products, Array.isArray(products));
   /* Filter by search */
   filteredProducts = filteredProducts.filter(
     (eachItem) =>
       eachItem["name"].toLowerCase().includes(searchText.toLowerCase()) ||
-      eachItem["season"].toLowerCase().includes(searchText.toLowerCase())
+      eachItem["season"].toLowerCase().includes(searchText.toLowerCase()),
   );
 
   /* Filter by size */
   if (sizeFilter !== "all") {
     filteredProducts = filteredProducts.filter((obj) =>
-      obj.variants.some((cat) => cat.size.toLowerCase() === sizeFilter)
+      obj.variants.some((cat) => cat.size.toLowerCase() === sizeFilter),
     );
   }
 
@@ -83,7 +89,7 @@ export default function Products() {
     filteredProducts = filteredProducts.filter((eachItem) =>
       stockFilter === "1"
         ? Number(eachItem["totalstock"]) > 0
-        : Number(eachItem["totalstock"]) < 1
+        : Number(eachItem["totalstock"]) < 1,
     );
   }
 
@@ -92,7 +98,7 @@ export default function Products() {
     filteredProducts = filteredProducts.filter((eachItem) =>
       publishedFilter === "1"
         ? Number(eachItem["state"]) > 0
-        : Number(eachItem["state"]) < 1
+        : Number(eachItem["state"]) < 1,
     );
   }
 

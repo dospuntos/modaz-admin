@@ -31,21 +31,38 @@ export function getImagesByColor(imgJSON, color) {
 }
 
 // Run some internal checks for possible errors in JSON encoded images
+function defaultImages() {
+  return [{ image: "default.png", color: "multi" }];
+}
+
+// Accepts either a JSON string or an already-parsed value
 function validateJSON(imgJSON) {
-  if (
-    imgJSON === "" ||
-    imgJSON === null ||
-    typeof imgJSON === "undefined" ||
-    imgJSON.startsWith('[{"image":"","color":"') ||
-    !imgJSON.startsWith('[{"image":')
-  ) {
-    // Return default JSON
-    console.warn(
-      "There was an error decoding image JSON - default value used. - " +
-        imgJSON,
-    );
-    return JSON.parse('[{"image":"default.png","color":"multi"}]');
-  } else {
-    return JSON.parse(imgJSON);
+  let value = imgJSON;
+
+  if (typeof imgJSON === "string") {
+    try {
+      value = JSON.parse(imgJSON);
+    } catch (err) {
+      console.warn("Could not parse image JSON, using default:", imgJSON, err);
+      return defaultImages();
+    }
   }
+
+  const isValid =
+    Array.isArray(value) &&
+    value.length > 0 &&
+    value.every(
+      (item) =>
+        item !== null &&
+        typeof item === "object" &&
+        typeof item.image === "string" &&
+        item.image !== "",
+    );
+
+  if (!isValid) {
+    console.warn("Invalid image data, using default:", imgJSON);
+    return defaultImages();
+  }
+
+  return value;
 }

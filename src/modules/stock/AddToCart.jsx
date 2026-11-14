@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { searchUPC } from "api/productApi";
 import { toast } from "react-toastify";
-import { useCart } from "modules/cart/cartContext";
+import { useCart } from "modules/cart/CartContext";
 import ProductDetails from "./ProductDetails";
 import TextField from "@mui/material/TextField";
 import CircularProgress from "@mui/material/CircularProgress";

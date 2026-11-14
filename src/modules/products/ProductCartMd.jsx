@@ -17,7 +17,7 @@ import { Link } from "react-router-dom";
 import ChangeStock from "modules/ChangeStock";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import { getAllImages } from "functions";
-import { useCart } from "modules/cart/cartContext";
+import { useCart } from "modules/cart/CartContext";
 
 /* const useStyles = makeStyles((theme) => ({
   root: {
