@@ -48,7 +48,7 @@ export default function Login({ setToken }) {
         sm={4}
         md={7}
         sx={{
-          backgroundImage: "url(https://source.unsplash.com/1600x900/?colors)",
+          backgroundImage: "url(https://picsum.photos/1200?blur=2)",
           backgroundRepeat: "no-repeat",
           backgroundColor: (t) =>
             t.palette.mode === "light"

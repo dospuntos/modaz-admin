@@ -88,12 +88,11 @@ export default function App() {
 
   function handleLogout(e) {
     e.preventDefault();
-    logOut()
-      .then((data) => data.json())
-      .then(() => {
-        localStorage.removeItem("token");
-        window.location.reload();
-      });
+
+    logOut().finally(() => {
+      localStorage.removeItem("token");
+      window.location.reload();
+    });
   }
 
   return (

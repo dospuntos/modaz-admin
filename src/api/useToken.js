@@ -1,29 +1,43 @@
 import { useState } from "react";
 
+function getStoredToken() {
+  try {
+    return JSON.parse(localStorage.getItem("token")) || null;
+  } catch {
+    return null;
+  }
+}
+
 export default function useToken() {
-  const getToken = () => {
-    const tokenString = localStorage.getItem("token");
-    const userToken = JSON.parse(tokenString);
-    return userToken;
+  const [token, setTokenState] = useState(getStoredToken);
+
+  const setToken = (response) => {
+    const data = response?.data ?? response;
+
+    if (!data || !data.access_token) {
+      return;
+    }
+
+    const now = Date.now();
+
+    const userToken = {
+      ...data,
+      access_token_expires: now + data.access_token_expires_in * 1000,
+      refresh_token_expires: now + data.refresh_token_expires_in * 1000,
+    };
+
+    localStorage.setItem("token", JSON.stringify(userToken));
+    setTokenState(userToken);
   };
 
-  const [token, setToken] = useState(getToken);
-
-  const saveToken = (userToken) => {
-    if (userToken !== "" && userToken !== "undefined") {
-      userToken.data.access_token_expires = new Date(
-        Date.now() + userToken.data.access_token_expires_in * 1000
-      );
-      userToken.data.refresh_token_expires = new Date(
-        Date.now() + userToken.data.refresh_token_expires_in * 1000
-      );
-    }
-    localStorage.setItem("token", JSON.stringify(userToken.data));
-    setToken(userToken);
+  const clearToken = () => {
+    localStorage.removeItem("token");
+    setTokenState(null);
   };
 
   return {
-    setToken: saveToken,
     token,
+    setToken,
+    clearToken,
   };
 }

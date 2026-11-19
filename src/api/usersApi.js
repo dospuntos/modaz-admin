@@ -18,33 +18,40 @@ export function getUsers() {
     .catch(handleError);
 }
 
+const API_URL = import.meta.env.VITE_API2_URL;
+
 export function loginUser(credentials) {
-  return fetch(import.meta.env.VITE_API2_URL + "sessions", {
+  return fetch(`${API_URL}sessions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Accept: "application/json",
     },
     body: JSON.stringify(credentials),
   })
-    .then((data) => data.json())
+    .then(handleResponse)
     .catch(handleError);
 }
 
-export function logOut() {
-  // Todo - logout from server using token and session ID
-  const token = JSON.parse(localStorage.getItem("token"));
-  if (token?.session_id) {
-    // Todo - check token expiry and refresh if needed.
-    return fetch(
-      import.meta.env.VITE_API2_URL + "sessions/" + token.session_id,
-      {
+export async function logOut() {
+  const token = JSON.parse(localStorage.getItem("token") || "null");
+
+  try {
+    if (token?.session_id) {
+      const response = await fetch(`${API_URL}sessions/${token.session_id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           Authorization: token.access_token,
         },
-        body: JSON.stringify({ refresh_token: token.refresh_token }),
-      },
-    );
+        body: JSON.stringify({
+          refresh_token: token.refresh_token,
+        }),
+      });
+
+      await handleResponse(response);
+    }
+  } finally {
+    localStorage.removeItem("token");
   }
 }
