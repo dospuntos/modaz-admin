@@ -30,13 +30,13 @@ export default function CartContents({
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle id="simple-dialog-title">
         Carrito de compras
-        <IconButton edge="end">
-          <DeleteIcon
-            style={{ color: red[900] }}
-            onClick={() => {
-              dispatch({ type: "empty" });
-            }}
-          />
+        <IconButton
+          edge="end"
+          onClick={() => {
+            dispatch({ type: "empty" });
+          }}
+        >
+          <DeleteIcon style={{ color: red[900] }} />
         </IconButton>
       </DialogTitle>
       {!cart.length ? (

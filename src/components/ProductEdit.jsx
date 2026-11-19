@@ -22,6 +22,7 @@ import ImageEdit from "components/ImageEdit";
 import { getDefaultImage, getAllImages } from "functions";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import InputAdornment from "@mui/material/InputAdornment";
+import { Box } from "@mui/material";
 
 export default function ProductEdit(props) {
   const [product, setProduct] = useState([
@@ -57,19 +58,20 @@ export default function ProductEdit(props) {
   }
 
   useEffect(() => {
-    // Get products and split category list to array
-    getProductById(productid).then((product) => {
-      setProduct({ ...product, category: product.category.split(",") });
+    getProductById(productid).then((res) => {
+      const p = res.data?.products[0] ?? res;
+      setProduct({
+        ...p,
+        category: p.category ? String(p.category).split(",") : [],
+      });
     });
 
-    // Get variants
-    getVariantsById(productid).then((variants) => {
-      setVariants(variants);
+    getVariantsById(productid).then((res) => {
+      setVariants(res.data?.variants ?? []);
     });
 
-    // Get categories
-    getCategories().then((categories) => {
-      setCategories(categories);
+    getCategories().then((res) => {
+      setCategories(res.data?.categories ?? []);
     });
   }, [productid]);
 
@@ -119,7 +121,7 @@ export default function ProductEdit(props) {
     ];
     saveVariant({ ...newVariant }).then(() => {
       getVariantsById(productid).then((variants) => {
-        setVariants(variants);
+        setVariants(variants.data.variants);
       });
     });
   }
@@ -180,13 +182,15 @@ export default function ProductEdit(props) {
   return (
     <>
       <Modal open={open} onClose={handleClose}>
-        <ImageEdit
-          images={product.images}
-          handleImageChange={handleImageChange}
-          handleMakeDefaultImage={handleMakeDefaultImage}
-          handleAddImage={handleAddImage}
-          handleDeleteImage={handleDeleteImage}
-        />
+        <Box>
+          <ImageEdit
+            images={product.images}
+            handleImageChange={handleImageChange}
+            handleMakeDefaultImage={handleMakeDefaultImage}
+            handleAddImage={handleAddImage}
+            handleDeleteImage={handleDeleteImage}
+          />
+        </Box>
       </Modal>
       <Grid container spacing={3}>
         <Grid item xs={12} md={8}>
@@ -314,17 +318,19 @@ export default function ProductEdit(props) {
           <p>
             <small>(Los cambios se guardan inmediatamente)</small>
           </p>
-          {variants.map((item) => {
-            return (
-              <ProductVariant
-                key={item.id}
-                item={item}
-                handleVariantChange={handleVariantChange}
-                handleVariantSave={handleVariantSave}
-                handleVariantDelete={handleVariantDelete}
-              />
-            );
-          })}
+          {Array.isArray(variants) &&
+            variants.length &&
+            variants.map((item) => {
+              return (
+                <ProductVariant
+                  key={item.id}
+                  item={item}
+                  handleVariantChange={handleVariantChange}
+                  handleVariantSave={handleVariantSave}
+                  handleVariantDelete={handleVariantDelete}
+                />
+              );
+            })}
           <Button
             variant="contained"
             onClick={addVariant}
@@ -340,6 +346,7 @@ export default function ProductEdit(props) {
             prodCats={product.category || []}
             handleChange={handleCategoryChange}
           />
+          <br />
           <img src={getDefaultImage(product.images)} alt={product.name} />
           <br />
           {getAllImages(product.images).map((item, index) => {

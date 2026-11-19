@@ -72,7 +72,9 @@ export default function ProductCardLg({
         <div className={clicked ? "bottom clicked" : "bottom"}>
           <div className="left">
             <div className="details">
-              <h1>{product.name}</h1>
+              <h1>
+                {product.name} (ID: {product.id})
+              </h1>
               <p>
                 Bs.{" "}
                 {product.price_discount && product.price_discount !== "0" ? (

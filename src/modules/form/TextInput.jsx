@@ -1,33 +1,29 @@
 import PropTypes from "prop-types";
 
-function TextInput(props) {
+function TextInput({ name, label, onChange, value = "", className, id = "" }) {
   return (
     <div className="pure-control-group">
-      <label htmlFor={props.name}>{props.label}</label>
+      <label htmlFor={name}>{label}</label>
       <input
-        id={props.name}
+        id={id || name}
         type="text"
-        onChange={props.onChange}
-        name={props.name}
-        className={props.className}
-        value={props.value}
+        onChange={onChange}
+        name={name}
+        className={className}
+        value={value}
       />
     </div>
   );
 }
 
-export default TextInput;
-
 TextInput.propTypes = {
-  id: PropTypes.string.isRequired,
+  id: PropTypes.string,
   name: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   value: PropTypes.string,
+  className: PropTypes.string,
   error: PropTypes.string,
 };
 
-TextInput.defaultProps = {
-  error: "",
-  id: "",
-};
+export default TextInput;

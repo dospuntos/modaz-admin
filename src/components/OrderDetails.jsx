@@ -10,7 +10,7 @@ import {
   Select,
   InputLabel,
 } from "@mui/material";
-import { ToggleButtonGroup, ToggleButton } from "@mui/lab";
+import { ToggleButtonGroup, ToggleButton } from "@mui/material";
 import {
   getOrderById,
   deleteOrderItem,

@@ -7,40 +7,14 @@ import Add from "modules/stock/Add";
 import Remove from "modules/stock/Remove";
 import Consult from "modules/stock/Consult";
 import AddToCart from "modules/stock/AddToCart";
-import ToggleButtonGroup from "@mui/lab/ToggleButtonGroup";
-import ToggleButton from "@mui/lab/ToggleButton";
-
-/* const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-  },
-
-  appBarSpacer: theme.mixins.toolbar,
-  content: {
-    flexGrow: 1,
-    height: "100vh",
-    overflow: "auto",
-  },
-  container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
-  },
-  paper: {
-    padding: theme.spacing(2),
-    display: "flex",
-    overflow: "auto",
-    flexDirection: "column",
-  },
-  fixedHeight: {
-    height: 240,
-  },
-})); */
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
 
 export default function Stock() {
   const [tab, setTab] = useStickyState("add", "tab");
 
   return (
-    <Container maxWidth="lg" /*  className={classes.container} */>
+    <Container maxWidth="lg">
       <Grid
         container
         direction="row"

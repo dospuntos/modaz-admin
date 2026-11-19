@@ -3,8 +3,8 @@ import ProductCardLg from "modules/products/ProductCardLg";
 import ProductCardMd from "modules/products/ProductCartMd";
 import ProductCardSm from "modules/products/ProductCardSm";
 import ProductList from "modules/products/ProductList";
-import ToggleButton from "@mui/lab/ToggleButton";
-import ToggleButtonGroup from "@mui/lab/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import { BsFillGridFill, BsGrid3X3GapFill } from "react-icons/bs";
 import { FaThList } from "react-icons/fa";
 import { useStickyState } from "hooks";
@@ -48,10 +48,9 @@ export default function Products() {
     });
 
     // Get categories
-    getCategories().then((categories) =>
-      setCategories(categories.data.categories),
-    );
-    console.log("Got categories", categories);
+    getCategories().then((data) => {
+      setCategories(data.data.categories);
+    });
   }, [refreshProducts]);
 
   function forceProductRefresh() {
@@ -69,7 +68,6 @@ export default function Products() {
     );
   }
 
-  console.log("products:", products, Array.isArray(products));
   /* Filter by search */
   filteredProducts = filteredProducts.filter(
     (eachItem) =>
@@ -144,7 +142,7 @@ export default function Products() {
                 <MenuItem value="all">Todos</MenuItem>
                 {categories.map((cat) => (
                   <MenuItem key={cat.id} value={cat.id}>
-                    {cat.title} ({cat.path})
+                    {cat.name} ({cat.path})
                   </MenuItem>
                 ))}
               </Select>
