@@ -41,16 +41,33 @@ export default function Products() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get products
-    getProducts().then((products) => {
-      prodDispatch({ type: "set", data: products.data.products });
-      setLoading(false);
-    });
+    async function loadData() {
+      const [productsResult, categoriesResult] = await Promise.allSettled([
+        getProducts(),
+        getCategories(),
+      ]);
 
-    // Get categories
-    getCategories().then((data) => {
-      setCategories(data.data.categories);
-    });
+      if (productsResult.status === "fulfilled") {
+        prodDispatch({
+          type: "set",
+          data: productsResult.value?.data?.products ?? [],
+        });
+      } else {
+        console.error("Error loading products:", productsResult.reason);
+        prodDispatch({ type: "set", data: [] });
+      }
+
+      if (categoriesResult.status === "fulfilled") {
+        setCategories(categoriesResult.value?.data?.categories ?? []);
+      } else {
+        console.error("Error loading categories:", categoriesResult.reason);
+        setCategories([]);
+      }
+
+      setLoading(false);
+    }
+
+    loadData();
   }, [refreshProducts]);
 
   function forceProductRefresh() {

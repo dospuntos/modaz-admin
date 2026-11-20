@@ -1,10 +1,5 @@
 import { toast } from "react-toastify";
-import {
-  toggleFeatured,
-  togglePublished,
-  deleteProduct,
-  changeStock,
-} from "api/productApi";
+import { toggleFeatured, deleteProduct, changeStock } from "api/productApi";
 import _ from "lodash";
 
 export default function productReducer(products, action) {
@@ -15,10 +10,10 @@ export default function productReducer(products, action) {
 
     // Toggle featured state in API and current state
     case "featuredToggle": {
-      const { id } = action;
+      const { id, featured } = action;
 
       // send change to API
-      toggleFeatured(id);
+      toggleFeatured(id, featured);
 
       let tempProducts = products;
       let prevState = _.find(tempProducts, { id: id })["featured"];
@@ -35,20 +30,17 @@ export default function productReducer(products, action) {
     // Not a valid action
 
     case "publishedToggle": {
-      const { id } = action;
-      togglePublished(id);
+      const { id, state } = action;
 
-      let tempProducts = products;
-      let prevState = _.find(tempProducts, { id: id })["state"];
-      let newState = 1 - prevState;
-      _.set(_.find(tempProducts, { id: id }), "state", newState);
-
-      if (newState) {
+      if (state) {
         toast.success("Producto publicado");
       } else {
         toast.warning("Producto despublicado");
       }
-      return [...tempProducts];
+
+      return products.map((product) =>
+        product.id === id ? { ...product, state } : product,
+      );
     }
 
     case "updateStock": {
@@ -64,7 +56,7 @@ export default function productReducer(products, action) {
         _.flatten(_.map(tempProducts, "variants")),
         {
           vid: id,
-        }
+        },
       )["stock"];
       let newTotalStock = dir ? prevTotalstock + 1 : prevTotalstock - 1;
       let newVariantStock = dir
@@ -75,7 +67,7 @@ export default function productReducer(products, action) {
       _.set(
         _.find(tempProducts, { id: productId }),
         "totalstock",
-        newTotalStock
+        newTotalStock,
       );
 
       // Update variant (products->productId->variants->vId->totalstock)
@@ -84,24 +76,19 @@ export default function productReducer(products, action) {
           vid: id,
         }),
         "stock",
-        newVariantStock
+        newVariantStock,
       );
       toast.info("Stock del producto cambiado a " + newVariantStock);
       return [...tempProducts];
     }
 
-    case "delete":
-      if (window.confirm("Eliminar producto? No se puede restaurar.")) {
-        const { id } = action;
-        // Delete product from database
-        deleteProduct(id);
+    case "delete": {
+      const { id } = action;
 
-        // Remove from state
-        toast.info("Producto eliminado.");
-        return products.filter((item) => item.id !== id);
-      } else {
-        return products;
-      }
+      toast.info("Producto eliminado.");
+
+      return products.filter((item) => item.id !== id);
+    }
 
     default:
       throw new Error("Unhandled action " + action.type);

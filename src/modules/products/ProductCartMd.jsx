@@ -18,40 +18,7 @@ import ChangeStock from "modules/ChangeStock";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import { getAllImages } from "functions";
 import { useCart } from "modules/cart/CartContext";
-
-/* const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "32%",
-    maxWidth: 345,
-    float: "left",
-    margin: ".5%",
-  },
-  media: {
-    height: 0,
-    paddingTop: "84%", // 16:9
-  },
-  expand: {
-    transform: "rotate(0deg)",
-    marginLeft: "auto",
-    transition: theme.transitions.create("transform", {
-      duration: theme.transitions.duration.shortest,
-    }),
-  },
-  subheader: {
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  },
-  expandOpen: {
-    transform: "rotate(180deg)",
-  },
-  avatar: {
-    backgroundColor: green[500],
-  },
-  avatar2: {
-    backgroundColor: grey[200],
-  },
-})); */
+import { toast } from "react-toastify";
 
 export default function ProductCardMd({ product, prodDispatch }) {
   const { dispatch } = useCart();
@@ -63,8 +30,23 @@ export default function ProductCardMd({ product, prodDispatch }) {
   const images = getAllImages(product.images);
   const bgimg = import.meta.env.VITE_PROD_IMG_URL + images["0"]["image"];
 
+  async function handlePublishedToggle(id, state) {
+    try {
+      await togglePublished(id, state);
+
+      prodDispatch({
+        type: "publishedToggle",
+        id,
+        state,
+      });
+    } catch (error) {
+      console.error("Error updating publication state:", error);
+      toast.error("No se pudo actualizar el estado del producto");
+    }
+  }
+
   return (
-    <Card /* className={classes.root} */>
+    <Card>
       <CardHeader
         avatar={
           <Avatar
@@ -74,12 +56,7 @@ export default function ProductCardMd({ product, prodDispatch }) {
                 ? "backgroundColor: green[500]"
                 : "backgroundColor: grey[200]"
             }
-            onClick={() =>
-              prodDispatch({
-                type: "publishedToggle",
-                id: product.id,
-              })
-            }
+            onClick={() => handlePublishedToggle(product.id, 1 - product.state)}
           >
             {product.totalstock}
           </Avatar>
@@ -91,18 +68,12 @@ export default function ProductCardMd({ product, prodDispatch }) {
         }
         title={product.name}
         subheader={"Bs. " + product.price + " (ZIN: " + product.zinprice + ")"}
-        /* className={classes.subheader} */
       />
       <CardMedia
         /* className={classes.media} */ image={bgimg}
         title={product.name}
       />
       <CardContent>
-        {/* <Typography variant="body2" color="textSecondary" component="p">
-          This impressive paella is a perfect party dish and a fun meal to cook
-          together with your guests. Add 1 cup of frozen peas along with the
-          mussels, if you like.
-        </Typography> */}
         {product.variants.map((variant, index) => {
           return (
             <table>
@@ -171,9 +142,6 @@ export default function ProductCardMd({ product, prodDispatch }) {
           </IconButton>
         </Link>
         <IconButton
-          /* className={clsx(classes.expand, {
-            [classes.expandOpen]: expanded,
-          })} */
           onClick={handleExpandClick}
           aria-expanded={expanded}
           aria-label="show more"

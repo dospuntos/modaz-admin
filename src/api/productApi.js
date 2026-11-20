@@ -88,11 +88,11 @@ export function deleteCategory(id) {
 // Product properties
 
 export function togglePublished(id, published) {
-  return apiPatch(`products/${id}`, { published });
+  return apiPatch(`products/${id}`, { state: published ? 1 : 0 });
 }
 
 export function toggleFeatured(id, featured) {
-  return apiPatch(`products/${id}`, { featured });
+  return apiPatch(`products/${id}`, { featured: featured ? 1 : 0 });
 }
 
 // UPC lookup

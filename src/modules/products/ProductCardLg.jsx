@@ -9,6 +9,12 @@ import {
   RiStarLine,
   RiCheckboxCircleLine,
 } from "react-icons/ri";
+import {
+  toggleFeatured,
+  togglePublished,
+  deleteProduct,
+  changeStock,
+} from "api/productApi";
 import { BsGear } from "react-icons/bs";
 import ProductEdit from "components/ProductEdit";
 import Modal from "@mui/material/Modal";
@@ -17,6 +23,7 @@ import { getDefaultImage, getImageCount } from "functions";
 import BurstModeIcon from "@mui/icons-material/BurstMode";
 import { useCart } from "modules/cart/CartContext";
 import { useTheme } from "@mui/material/styles";
+import { toast } from "react-toastify";
 
 export default function ProductCardLg({
   product,
@@ -28,6 +35,54 @@ export default function ProductCardLg({
   const [open, setOpen] = useState(false);
   const defaultImg = getDefaultImage(product.images);
   const theme = useTheme();
+
+  async function handlePublishedToggle(id, state) {
+    try {
+      await togglePublished(id, state);
+
+      prodDispatch({
+        type: "publishedToggle",
+        id,
+        state,
+      });
+    } catch (error) {
+      console.error("Error updating publication state:", error);
+      toast.error("No se pudo actualizar el estado del producto");
+    }
+  }
+
+  async function handleFeaturedToggle(id, featured) {
+    try {
+      await toggleFeatured(id, featured);
+
+      prodDispatch({
+        type: "featuredToggle",
+        id,
+        featured,
+      });
+    } catch (error) {
+      console.error("Error updating featured state:", error);
+      toast.error("No se pudo actualizar el valor de destacado del producto");
+    }
+  }
+
+  async function handleDeleteProduct(id) {
+    if (!window.confirm("Eliminar producto? No se puede restaurar.")) {
+      return;
+    }
+
+    try {
+      await deleteProduct(id);
+
+      prodDispatch({
+        type: "delete",
+        id,
+      });
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      toast.error("No se pudo eliminar el producto.");
+    }
+  }
 
   return (
     <div className="wrapper">
@@ -101,22 +156,12 @@ export default function ProductCardLg({
               <RiCloseLine />
             </div>
             <div className="details">
-              <span
-                onClick={() =>
-                  prodDispatch({
-                    type: "delete",
-                    id: product.id,
-                  })
-                }
-              >
+              <span onClick={() => handleDeleteProduct(product.id)}>
                 <RiDeleteBinLine color="red" />
               </span>
               <span
                 onClick={() =>
-                  prodDispatch({
-                    type: "featuredToggle",
-                    id: product.id,
-                  })
+                  handleFeaturedToggle(product.id, 1 - product.featured)
                 }
               >
                 <RiStarLine
@@ -125,10 +170,7 @@ export default function ProductCardLg({
               </span>
               <span
                 onClick={() =>
-                  prodDispatch({
-                    type: "publishedToggle",
-                    id: product.id,
-                  })
+                  handlePublishedToggle(product.id, 1 - product.state)
                 }
               >
                 {String(product.state) === "1" ? (
